@@ -1,0 +1,87 @@
+{
+  "artifact_schema": 1,
+  "dataset": "UCI PhiUSIIL 967",
+  "dataset_url": "https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset",
+  "dataset_license": "CC BY 4.0 (UCI page)",
+  "training_utc": "2026-09-21T15:12:29.997705+00:00",
+  "data_quality": {
+    "rows_seen": 235795,
+    "valid_unique": 235362,
+    "invalid_rows": 8,
+    "conflicting_urls_dropped": 0,
+    "sha256": "a236549cd369cd80bd478ff8e1779cbf44c58d5c3f79f7a51a1adbed7d06d1c6",
+    "labels": {
+      "0": 134850,
+      "1": 100512
+    }
+  },
+  "row_limit": null,
+  "split": "domain-group disjoint; train approximately 64%, validation 16%, test 20%",
+  "split_counts": {
+    "train": 150302,
+    "validation": 41836,
+    "test": 43224
+  },
+  "features": [
+    "url_length",
+    "hostname_length",
+    "path_query_length",
+    "hostname_labels",
+    "host_is_ip",
+    "https",
+    "has_userinfo",
+    "nonstandard_port",
+    "digit_count",
+    "digit_ratio",
+    "hyphen_count",
+    "at_count",
+    "dot_count",
+    "slash_count",
+    "question_count",
+    "equals_count",
+    "ampersand_count",
+    "percent_encoded_count",
+    "path_depth",
+    "punycode",
+    "suspicious_token_count",
+    "character_entropy",
+    "offline_rule_count"
+  ],
+  "estimator": "DictVectorizer + LogisticRegression",
+  "decision_threshold": 0.2,
+  "validation_metrics": {
+    "samples": 41836,
+    "phishing_count": 20274,
+    "threshold": 0.2,
+    "precision_phishing": 0.99644,
+    "recall_phishing": 0.98091,
+    "f1_phishing": 0.98862,
+    "balanced_accuracy": 0.98881,
+    "average_precision": 0.99378,
+    "roc_auc": 0.98946,
+    "confusion_matrix": {
+      "tn": 21491,
+      "fp": 71,
+      "fn": 387,
+      "tp": 19887
+    }
+  },
+  "test_metrics": {
+    "samples": 43224,
+    "phishing_count": 16108,
+    "threshold": 0.2,
+    "precision_phishing": 0.99593,
+    "recall_phishing": 0.98796,
+    "f1_phishing": 0.99193,
+    "balanced_accuracy": 0.99278,
+    "average_precision": 0.99705,
+    "roc_auc": 0.99644,
+    "confusion_matrix": {
+      "tn": 27051,
+      "fp": 65,
+      "fn": 194,
+      "tp": 15914
+    }
+  },
+  "limits": "URL lexical features only; historical labels, possible data biases, grouped holdout is not a temporal or external test; cannot verify site safety; probabilities not calibrated."
+}

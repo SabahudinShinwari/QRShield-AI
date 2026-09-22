@@ -1,0 +1,30 @@
+QRShield AI 3.0 — Windows quick start
+====================================
+
+Extract ZIP. Open QRShield-AI-v3 in VS Code.
+
+BACKEND TERMINAL — run one line at a time:
+cd backend
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python download_dataset.py
+python train_phishing_model.py
+python -m pytest -q
+python app.py
+
+If official dataset download fails, manually download the original UCI PhiUSIIL 967 ZIP:
+https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset
+Extract PhiUSIIL_Phishing_URL_Dataset.csv to backend/ml_data/ and then train.
+If model training fails, don't claim ML is functional; use offline URL rules.
+
+FRONTEND TERMINAL — a NEW terminal opened at project root:
+cd frontend
+npm install
+npm run dev
+
+Open http://127.0.0.1:5173/
+AI analysis -> Inspect URL locally -> Analyze with local ML (after training).
+Gemini key is NOT required. Keep both terminals running.
+For future sessions, reuse venv/model; don't reinstall/retrain every time.
+See README.md and docs/DATA_AND_MODEL.md for limitations, metrics, citations.

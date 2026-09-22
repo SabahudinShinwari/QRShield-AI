@@ -1,0 +1,21 @@
+# Local dependencies, generated builds, caches and secrets
+**/node_modules/
+**/dist/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+# Local training data and trained pickle models (never load untrusted artifacts)
+backend/ml_data/*
+!backend/ml_data/.gitkeep
+backend/ml_artifacts/*
+!backend/ml_artifacts/.gitkeep
+!backend/ml_artifacts/url_model.joblib
+!backend/ml_artifacts/metadata.json!backend/ml_artifacts/url_model.joblib
+!backend/ml_artifacts/metadata.json
+**/*.tsbuildinfo
