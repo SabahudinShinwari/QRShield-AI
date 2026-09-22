@@ -1,30 +1,64 @@
-QRShield AI 3.0 — Windows quick start
-====================================
+QRSHIELD AI 3.0 — QUICK START
+=============================
 
-Extract ZIP. Open QRShield-AI-v3 in VS Code.
+LIVE WEBSITE
+https://qr-shield-ai-g8wo.vercel.app
 
-BACKEND TERMINAL — run one line at a time:
+Frontend: Vercel
+Backend: Render
+The public demo is for educational use only. Do not submit sensitive information.
+
+RUN LOCALLY
+-----------
+
+1. BACKEND — Open a terminal in the project root:
+
 cd backend
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python download_dataset.py
-python train_phishing_model.py
-python -m pytest -q
 python app.py
 
-If official dataset download fails, manually download the original UCI PhiUSIIL 967 ZIP:
-https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset
-Extract PhiUSIIL_Phishing_URL_Dataset.csv to backend/ml_data/ and then train.
-If model training fails, don't claim ML is functional; use offline URL rules.
+Backend: http://127.0.0.1:5000
 
-FRONTEND TERMINAL — a NEW terminal opened at project root:
+2. FRONTEND — Open a SECOND terminal in the project root:
+
 cd frontend
 npm install
 npm run dev
 
-Open http://127.0.0.1:5173/
-AI analysis -> Inspect URL locally -> Analyze with local ML (after training).
-Gemini key is NOT required. Keep both terminals running.
-For future sessions, reuse venv/model; don't reinstall/retrain every time.
-See README.md and docs/DATA_AND_MODEL.md for limitations, metrics, citations.
+Website: http://127.0.0.1:5173
+
+The trained ML model is already included.
+You do NOT need to download the dataset or retrain the model to run the app.
+
+OPTIONAL: RETRAIN THE ML MODEL
+-----------------------------
+
+From the backend directory:
+
+python download_dataset.py
+python train_phishing_model.py
+
+Dataset: UCI PhiUSIIL Phishing URL (Website), Dataset 967.
+The full dataset is excluded from GitHub.
+
+TESTING
+-------
+
+Backend directory:
+python -m pytest -q
+
+Frontend directory:
+npm run build
+
+IMPORTANT NOTES
+---------------
+
+- Keep both terminals running when using the local version.
+- Gemini is optional and is not configured in the public demo.
+- URL predictions are experimental, not safety guarantees.
+- Public encryption and decryption are processed on the hosted backend.
+- Do not submit real passwords or confidential messages to the public demo.
+
+See README.md, SECURITY.md and docs/DATA_AND_MODEL.md for details.
