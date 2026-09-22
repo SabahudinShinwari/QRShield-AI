@@ -1,72 +1,242 @@
 # QRShield AI 3.0
 
-**A local, educational QR encryption + offline URL-phishing research workspace** by Sabahudin Shinwari. Professional navy/blue/violet React UI; no green. **No subscription, Gemini key, or cloud inference is needed for the local ML feature.** This is not an audited security service, real-time threat feed or safety guarantee.
+**Secure QR Code Encryption and ML-Based Phishing URL Analysis**
 
-## What works, and what needs a one-time training step
+An educational full-stack cybersecurity project developed by **Sabahudin Shinwari**. QRShield AI combines password-protected QR codes, QR scanning and decryption, structural URL inspection, and a trained machine-learning model for identifying phishing-like URL patterns.
 
-| Capability | Status |
+The application uses a **React and TypeScript frontend**, a **Python Flask backend**, and a **scikit-learn classifier**.
+
+> **Security disclaimer:** QRShield AI is an educational prototype, not an audited security service. Its URL analysis does not guarantee that a website is safe or malicious. Do not use the public demo to process genuinely sensitive information.
+
+## 🌐 Live Demo
+
+**Website:** https://qr-shield-ai-g8wo.vercel.app
+
+**Backend API:** https://qrshield-ai-backend.onrender.com
+
+**API health check:** https://qrshield-ai-backend.onrender.com/api/health
+
+The React frontend is hosted on Vercel, and the Flask backend is hosted on Render.
+
+**Note:** The free Render instance may become inactive after periods of inactivity. The first API request can take longer while the backend starts.
+
+---
+
+## ✨ Features
+
+### 1. Secure QR Code Encryption
+
+- Encrypt short text messages using AES-256-GCM.
+- Derive encryption keys from passwords using scrypt.
+- Generate encrypted QR codes.
+- Download QR codes as PNG images.
+- Copy encrypted payloads.
+- Keep the password separate from the QR payload.
+
+### 2. QR Scanning and Decryption
+
+- Upload PNG or JPEG QR images.
+- Scan QR codes using a camera with user permission.
+- Extract encrypted QSE1 payloads.
+- Decrypt messages using the correct password.
+- Reject incorrect passwords or modified encrypted payloads through authenticated decryption.
+
+### 3. Structural URL Analysis
+
+Inspect URL characteristics without visiting the destination website.
+
+The rule-based inspector examines URL structure and identifies indicators that may warrant additional caution.
+
+**Limitations:**
+
+- Does not visit the destination.
+- Does not follow redirects.
+- Does not check live threat-intelligence feeds.
+- Does not verify website ownership.
+- Does not certify a URL as safe.
+
+### 4. Machine-Learning Phishing Detection
+
+QRShield AI includes a trained URL-only phishing-pattern classifier.
+
+**Model:** Logistic regression using lexical URL features.
+
+**Dataset:** UCI PhiUSIIL Phishing URL (Website), Dataset 967.
+
+**Implementation:**
+
+- Extracts lexical features from submitted URLs.
+- Uses a trained scikit-learn model.
+- Runs inference on the Flask backend.
+- Does not visit the destination website.
+- Displays phishing-like, benign-like, or manual-review signals.
+- Does not display model scores as calibrated real-world safety probabilities.
+
+A provisional manual-review band is used for borderline model signals. This is an interpretation rule and does not change the original trained threshold or held-out evaluation metrics.
+
+**Important:** Training and test results describe performance on historical data. Real-world phishing attacks may differ substantially.
+
+### 5. Optional Gemini Explanations
+
+The application includes an optional Gemini explanation feature.
+
+However, **Gemini is not configured in the current public deployment**. Core QR encryption, decryption, structural URL inspection, and the local trained ML model work without Gemini.
+
+No Gemini API key is included in this repository.
+
+### 6. Interactive Dashboard
+
+- API connection status.
+- ML model availability.
+- Session activity.
+- Encryption and scanning shortcuts.
+- Responsive interface.
+- Light and dark themes.
+
+Session activity displays event descriptions rather than message contents.
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
 |---|---|
-| AES-256-GCM/scrypt message encryption; QR PNG and copyable payload | Implemented; original `crypto_core.py` preserved |
-| Image/webcam QR scanning; correct/wrong-password decryption | Implemented |
-| Offline structural URL warnings | Implemented (rules, not AI) |
-| Local phishing-pattern ML | Training/inference code and UI implemented. **No trained model ships in this ZIP.** Download the real dataset and run training below. |
-| Optional Gemini explanation | Original consent-only feature retained. The previously discussed Google project returned `403 PERMISSION_DENIED` / Restricted; Gemini is **not** needed for this version. |
-| Publicly hosted production service | Not implemented; localhost prototype only |
+| Frontend | React, TypeScript, Vite |
+| Styling | CSS |
+| Backend | Python, Flask |
+| Production server | Gunicorn |
+| Cryptography | AES-256-GCM, scrypt |
+| QR generation | Python qrcode |
+| QR scanning | OpenCV |
+| Machine learning | scikit-learn, NumPy, SciPy, joblib |
+| URL processing | Python URL analysis and tldextract |
+| Frontend hosting | Vercel |
+| Backend hosting | Render |
+| Version control | Git and GitHub |
 
-No fabricated dataset, classifier scores, success percentages or threat probabilities are presented. A locally trained model is enabled **only** when the artifacts are present. When the model is unavailable, the app explains how to train it; it does **not** fall back to made-up predictions.
+---
 
-## Prerequisites
+## 🏗️ System Architecture
 
-- Windows PowerShell, Python **3.11+** and Node.js **20.19+ or 22.12+**.
-- Internet **once** to install dependencies and download the research dataset. Inference is offline.
-- Extract this ZIP and open `QRShield-AI-v3` in VS Code.
+The public application follows this structure:
 
-### 1. Backend terminal (VS Code → Terminal → New Terminal)
+```text
+User's Browser
+      |
+      v
+React + TypeScript Frontend
+        (Vercel)
+      |
+      | HTTPS requests to /api/*
+      v
+Vercel API Rewrite
+      |
+      v
+Python Flask Backend
+       (Render)
+      |
+      +-- QR Encryption / Decryption
+      |
+      +-- QR Image Scanning
+      |
+      +-- Structural URL Analysis
+      |
+      +-- Trained ML Classifier
+```
+
+Vercel forwards `/api/*` requests to the Flask backend through the configuration in `frontend/vercel.json`.
+
+The frontend does not need to store a backend API key.
+
+---
+
+## 📁 Repository Structure
+
+```text
+QRShield-AI/
+|
+|-- .github/
+|   `-- workflows/
+|
+|-- backend/
+|   |-- app.py
+|   |-- crypto_core.py
+|   |-- url_analysis.py
+|   |-- ml_features.py
+|   |-- ml_detector.py
+|   |-- train_phishing_model.py
+|   |-- download_dataset.py
+|   |-- gemini_explainer.py
+|   |-- requirements.txt
+|   |-- ml_artifacts/
+|   |   |-- url_model.joblib
+|   |   `-- metadata.json
+|   |-- ml_data/
+|   `-- tests/
+|
+|-- frontend/
+|   |-- src/
+|   |   |-- App.tsx
+|   |   |-- main.tsx
+|   |   `-- style.css
+|   |-- package.json
+|   |-- vite.config.ts
+|   `-- vercel.json
+|
+|-- docs/
+|   |-- DATA_AND_MODEL.md
+|   `-- ROADMAP.md
+|
+|-- .gitignore
+|-- README.md
+|-- SECURITY.md
+`-- START_HERE.txt
+```
+
+The original dataset CSV, Python virtual environments, frontend dependencies, and generated build files are excluded from Git.
+
+The trained model artifacts and model metadata are included in the repository.
+
+---
+
+## 🚀 Run Locally
+
+### Prerequisites
+
+Install:
+
+- Python 3.11 or newer.
+- Node.js compatible with the frontend's Vite version.
+- Git.
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/SabahudinShinwari/QRShield-AI.git
+cd QRShield-AI
+```
+
+### Step 2 — Start the Backend
+
+Open a terminal in VS Code.
+
+**Windows PowerShell:**
 
 ```powershell
 cd backend
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m pytest -q
-```
-
-If you already have a `.venv`, skip creating it, but **run pip install again** because version 3 adds scikit-learn, joblib and tldextract.
-
-### 2. Get the authentic dataset (one-time; ~15 MB download)
-
-```powershell
-python download_dataset.py
-```
-
-This downloads **UCI PhiUSIIL Phishing URL (Website), dataset 967**, and extracts `backend/ml_data/PhiUSIIL_Phishing_URL_Dataset.csv`. If the automatic download fails, open the [official UCI dataset page](https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset), download its ZIP manually, extract the CSV, and place it in `backend/ml_data/` using the exact filename above. **Do not put the extracted dataset or key material on GitHub.** The dataset is separately licensed under CC BY 4.0 by the UCI listing; see `docs/DATA_AND_MODEL.md`.
-
-**Labels are counterintuitive:** original UCI `0 = phishing`, `1 = legitimate`. The training script explicitly converts them to our internal `1 = phishing`, `0 = benign`.
-
-### 3. Train and evaluate the actual model
-
-```powershell
-python train_phishing_model.py
-```
-
-Wait for `model_saved_to` and genuine `validation_metrics` / `test_metrics` in the terminal. Outputs:
-
-- `backend/ml_artifacts/url_model.joblib` — locally produced model (never load an untrusted joblib file).
-- `backend/ml_artifacts/metadata.json` — dataset SHA-256, class counts, split sizes, selected threshold, real held-out precision, recall, F1, confusion matrix, average precision, AUC and limitations.
-
-The script reads only raw `URL` and `label` from the official CSV. It extracts lexical features directly from the submitted URL, with **no DNS, page fetches, certificates, redirects, external API requests or webpage-derived columns**. It removes exact duplicates and conflicting labels, groups URL records by registered domain (bundled public-suffix snapshot), makes disjoint train/validation/test splits, fits a logistic-regression classifier, chooses its threshold on **validation only** using F2, and reports metrics on untouched held-out test groups.
-
-This is a **historical, in-dataset evaluation, not an external/time-based validation**. Its estimates can be biased and can fail on unseen attack types. The UI deliberately reports only *phishing-like* or *benign-like pattern* with a warning; no invented or uncalibrated safety percentage.
-
-### 4. Start the backend
-
-```powershell
 python app.py
 ```
 
-Leave the terminal open. Expected: `http://127.0.0.1:5000`.
+The backend should be available at:
 
-### 5. Start the frontend in a SECOND terminal
+http://127.0.0.1:5000
+
+### Step 3 — Start the Frontend
+
+Open a **second terminal** from the repository's root directory.
 
 ```powershell
 cd frontend
@@ -74,64 +244,218 @@ npm install
 npm run dev
 ```
 
-If opening a terminal from the project root, the commands above work. If you're already in `backend`, run `cd ..\frontend` instead. Open **http://127.0.0.1:5173/**.
+Open:
 
-On the **AI analysis** screen, enter a complete URL → **Inspect URL locally** → **Analyze with local ML**. The second button is enabled only after successfully training a model and starting/restarting Flask. Click it explicitly; decryption/QR scanning never auto-submit URLs for classification.
+http://127.0.0.1:5173
 
-For later sessions you only need to activate the backend environment and start Flask, then start Vite separately. You do **not** need to retrain on every launch.
+Vite forwards local `/api` requests to the Flask development server.
 
-## Testing
+**Note:** The trained model artifacts are already included. You do not need to retrain the model simply to run the application.
+
+---
+
+## 🧠 Dataset and Model Training
+
+QRShield AI uses:
+
+**PhiUSIIL Phishing URL (Website)**  
+UCI Machine Learning Repository — Dataset 967
+
+Dataset reference:
+
+https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset
+
+The full CSV is not committed to GitHub.
+
+To reproduce the model training process, open a terminal in `backend/` and run:
 
 ```powershell
-# backend terminal from backend/
-python -m pytest -q
+python download_dataset.py
+python train_phishing_model.py
+```
 
-# frontend terminal from frontend/
+The training process generates:
+
+```text
+backend/ml_artifacts/url_model.joblib
+backend/ml_artifacts/metadata.json
+```
+
+The metadata records information about the dataset, training configuration, evaluation, and limitations.
+
+The training approach uses URL-derived lexical features and separates data by registered domain to reduce overlap between training and evaluation groups.
+
+Threshold selection is performed on validation data, followed by evaluation on held-out test data.
+
+**Evaluation limitations:** This is a historical, dataset-based evaluation. It is not an external, prospective, or production security validation.
+
+For further details, see:
+
+[Data and Model Documentation](docs/DATA_AND_MODEL.md)
+
+---
+
+## 🧪 Testing
+
+The project includes backend tests and a frontend production build.
+
+### Backend Tests
+
+From the `backend/` directory:
+
+```powershell
+python -m pytest -q
+```
+
+**Last locally reported result:** 47 tests passed.
+
+### Frontend Build
+
+From the `frontend/` directory:
+
+```powershell
 npm run build
 ```
 
-**Build-environment disclosure:** the updated standalone cryptography/rule/ML tests passed in the artifact environment (the Flask-dependent tests were skipped here because Flask could not be downloaded). The TypeScript source passed syntax-transpilation checks; a complete Vite production build could not be executed in this environment because npm packages were not available. **User's previous 34 passing tests apply to v2, not a complete verification of this v3 archive.** Re-run both commands above on your PC before publishing and verify the real dataset download/training.
+The frontend production build was completed successfully before deployment.
 
-## Endpoints
+The public deployment was also manually checked for:
 
-| Method and route | Function |
-|---|---|
-| `GET /api/health` | API availability and honest `ml.ready` model status |
-| `GET /api/ml/status` | Model installed / untrained / invalid state |
-| `POST /api/ml/predict` | `{"url":"https://..."}`; **503 if untrained**, URL-only local inference otherwise |
-| `POST /api/analyze` | Independent offline structural rules; never visits the link |
-| `POST /api/encrypt` | QSE1 encrypted payload and QR PNG |
-| `POST /api/scan` | Uploaded PNG/JPEG -> decoded QR payload |
-| `POST /api/decrypt` | Password + QSE1 -> plaintext or authentication error |
-| `POST /api/ai/explain` | Optional Gemini, requires consent and an authorized key; no link sent without opt-in |
+- Frontend loading.
+- Backend API connectivity.
+- Encrypted QR generation.
+- QR payload scanning and authenticated decryption.
+- Structural URL analysis.
+- Trained ML inference.
 
-## Boundaries and privacy
+These checks confirm the tested workflows, not the absence of all defects or security vulnerabilities.
 
-- Original `crypto_core.py` is unchanged. Passwords and messages reach local Flask over localhost HTTP; **not end-to-end encryption**. A QR contains encrypted content, salt and nonce, **never the password**. Password sharing must occur separately. Weak passwords remain vulnerable to offline guessing.
-- The model processes the submitted URL on the Flask host. It **does not contact the target URL**. The model and original rule inspector can both produce false positives/negatives; a benign-like prediction cannot certify a site as safe.
-- Browser activity displays non-sensitive event labels in tab memory only. No stored URL, password or plaintext in the activity feed. Don't publish real sensitive URLs in issues or screenshots.
-- Gemini is independent and entirely optional. It requires a permitted project and explicit consent and shares only hostname/scheme/rule findings. A key's *presence* does not confirm its access works.
-- Flask development server, scanning, public-hosting controls and general security have **not** been audited; do not expose directly to the Internet. See `SECURITY.md`.
+---
 
-## Repository layout
+## 🔌 API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/health` | Backend and model availability |
+| GET | `/api/ml/status` | ML model status |
+| POST | `/api/encrypt` | Encrypt text and generate a QR code |
+| POST | `/api/scan` | Extract payload from a QR image |
+| POST | `/api/decrypt` | Decrypt an encrypted payload |
+| POST | `/api/analyze` | Analyze URL structure |
+| POST | `/api/ml/predict` | Run trained URL classification |
+| POST | `/api/ai/explain` | Optional Gemini explanation |
+
+The Gemini endpoint requires configuration and is not enabled in the public demo.
+
+---
+
+## ☁️ Deployment
+
+### Backend — Render
+
+The Flask backend is deployed as a Python Web Service.
+
+**Root Directory:**
 
 ```text
-QRShield-AI-v3/
-  backend/
-    app.py                 Flask routes + existing crypto/scan APIs
-    crypto_core.py         unchanged original AES-GCM / scrypt
-    url_analysis.py        existing offline structural rules
-    ml_features.py         deterministic lexical features, no destination visits
-    ml_detector.py         optional offline model loader / inference
-    train_phishing_model.py reproducible UCI training + group holdout + metrics
-    download_dataset.py    official UCI archive downloader
-    ml_data/                dataset directory (CSV ignored by Git)
-    ml_artifacts/           trained model + JSON (ignored by Git)
-    tests/                  existing and new integration/smoke tests
-  frontend/src/            existing original React screens + local ML panel
-  docs/DATA_AND_MODEL.md   methods, data citation, model card and limitations
-  SECURITY.md
-  .github/workflows/ci.yml
+backend
 ```
 
-**Data attribution:** Arvind Prasad and Shalini Chandra, *PhiUSIIL Phishing URL (Website)*, UCI Machine Learning Repository (2024), [dataset 967](https://archive.ics.uci.edu/dataset/967/phiusiil+phishing+url+dataset), CC BY 4.0 as listed by UCI. The model and metrics you generate belong to *your run*; they are not claimed as independently validated or security certified.
+**Build Command:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Start Command:**
+
+```bash
+gunicorn app:app --bind 0.0.0.0:$PORT
+```
+
+### Frontend — Vercel
+
+The frontend is deployed from the same GitHub repository.
+
+**Framework Preset:** Vite
+
+**Root Directory:**
+
+```text
+frontend
+```
+
+**Build Command:**
+
+```bash
+npm run build
+```
+
+**Output Directory:**
+
+```text
+dist
+```
+
+The `frontend/vercel.json` file forwards `/api/*` requests to the hosted Render backend.
+
+The current deployment does not require a Gemini API key.
+
+---
+
+## 🔐 Privacy and Security Limitations
+
+Please read these limitations before using or modifying this project.
+
+1. **Not end-to-end encryption:** The browser sends plaintext messages and passwords to the Flask backend for encryption or decryption. On the public website, the backend runs on Render.
+
+2. **Hosted processing:** QR images and submitted URLs are also sent to the backend for their respective operations.
+
+3. **HTTPS:** The public website communicates with its hosted backend through HTTPS. This does not eliminate the need to trust the backend and hosting infrastructure.
+
+4. **Password security:** Weak encryption passwords can be vulnerable to offline guessing attacks.
+
+5. **Not a phishing verdict:** Structural checks and machine-learning predictions can produce false positives and false negatives.
+
+6. **No independent security audit:** The application has not undergone a comprehensive production security assessment.
+
+7. **No guaranteed infrastructure privacy:** Session activity is designed not to store message contents, but this should not be interpreted as a guarantee about all hosting-provider logs or infrastructure.
+
+8. **No sensitive information:** Do not submit real credentials, confidential messages, or genuinely sensitive QR codes to the public demo.
+
+For additional information, read [SECURITY.md](SECURITY.md).
+
+---
+
+## 📚 Dataset Attribution
+
+Arvind Prasad and Shalini Chandra.
+
+*PhiUSIIL Phishing URL (Website).* UCI Machine Learning Repository, 2024. Dataset 967.
+
+The UCI dataset listing identifies its license as CC BY 4.0.
+
+The dataset is attributed to its original creators. QRShield AI does not claim ownership of the source dataset.
+
+---
+
+## 👨‍💻 Author
+
+**Sabahudin Shinwari**
+
+Computer Science (Data Science)  
+Albukhary International University, Malaysia
+
+**GitHub:** https://github.com/SabahudinShinwari
+
+**Live Project:** https://qr-shield-ai-g8wo.vercel.app
+
+---
+
+## ⚠️ Disclaimer
+
+QRShield AI is intended for education, research, and portfolio demonstration.
+
+It is not a commercial security product, an independently audited encryption service, or a replacement for established phishing protection tools.
+
+**Developed by Sabahudin Shinwari.**
