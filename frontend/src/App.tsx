@@ -95,10 +95,10 @@ function Landing({ navigate, theme, toggleTheme }: { navigate:(p:Page)=>void; th
       <main className="hero max-wrap">
         <div className="hero-text"><div className="eyebrow"><span className="pulse-dot"/> THE QR SECURITY WORKSPACE · VERSION 3.0</div>
           <h1>Secure the message. <span>Question the link.</span></h1>
-          <p>A private workspace to encrypt messages, unlock QR codes, and inspect suspicious links before you click. Real cryptography. Transparent URL checks. Optional Gemini explanations.</p>
+          <p>A security workspace to encrypt messages, unlock QR codes, and inspect suspicious links before you click. Real cryptography. Transparent URL checks. Optional Gemini explanations.</p>
           <div className="hero-actions"><button className="btn btn-primary" onClick={()=>navigate('encrypt')}>Start encrypting <ArrowRight size={18}/></button>
             <button className="btn btn-ghost" onClick={()=>navigate('about')}>Explore features <ChevronRight size={17}/></button></div>
-          <div className="hero-trust"><span><Fingerprint size={19}/> Authenticated encryption</span><span><Radar size={19}/> Offline URL inspection</span><span><LockKeyhole size={19}/> Privacy by default</span></div>
+          <div className="hero-trust"><span><Fingerprint size={19}/> Authenticated encryption</span><span><Radar size={19}/> URL-only inspection</span><span><LockKeyhole size={19}/> Transparent data handling</span></div>
         </div>
         <div className="hero-visual" aria-hidden="true"><div className="visual-orbit orbit-a"/><div className="visual-orbit orbit-b"/>
           <div className="hero-qr-panel"><QRArt/><div className="floating-shield"><Shield size={79} fill="rgba(90,70,236,.2)" strokeWidth={1.4}/><LockKeyhole size={30}/></div></div>
@@ -128,7 +128,7 @@ function Landing({ navigate, theme, toggleTheme }: { navigate:(p:Page)=>void; th
       </div>
       <div className="journey-cta"><div><strong>Ready to put it to the test?</strong><span>Try a real encrypted QR from start to finish.</span></div><button className="btn btn-primary" onClick={()=>navigate('encrypt')}>Open the workspace <ArrowRight size={17}/></button></div>
     </section>
-    <div className="landing-bottom max-wrap"><div><ShieldCheck size={23}/><span><strong>Real encryption. Transparent limitations.</strong> Built for an educational localhost demonstration.</span></div><button onClick={()=>navigate('about')}>Read security notes <ArrowRight size={16}/></button></div>
+    <div className="landing-bottom max-wrap"><div><ShieldCheck size={23}/><span><strong>Real encryption. Transparent limitations.</strong> Educational prototype with a hosted backend.</span></div><button onClick={()=>navigate('about')}>Read security notes <ArrowRight size={16}/></button></div>
     <footer className="footer"><div className="max-wrap footer-inner"><Mark small/><span>Built by Sabahudin Shinwari · QRShield AI v3.0</span><button onClick={()=>navigate('dashboard')}>Open workspace <ArrowRight size={15}/></button></div></footer>
   </div>;
 }
@@ -153,12 +153,12 @@ function Dashboard({ navigate, activity, online, mlReady, refresh }: {navigate:(
     </section>
     <section className="panel status-panel"><div className="panel-head"><div><h2>System status</h2><p>Live availability, not invented metrics.</p></div></div>
       <div className="status-item"><span className="status-bullet bullet-blue"/><div><strong>Encryption</strong><small>QSE1 / AES-256-GCM / scrypt</small></div><Tag>Implemented</Tag></div>
-      <div className="status-item"><span className="status-bullet bullet-violet"/><div><strong>Flask API</strong><small>{online === null ? 'Checking connection' : online ? 'Local backend responding' : 'Start backend on port 5000'}</small></div><Tag kind={online?'blue':'pink'}>{online===null?'Checking':online?'Online':'Offline'}</Tag></div>
+      <div className="status-item"><span className="status-bullet bullet-violet"/><div><strong>Flask API</strong><small>{online === null ? 'Checking connection' : online ? 'Backend responding' : 'Backend unavailable. Please try again.'}</small></div><Tag kind={online?'blue':'pink'}>{online===null?'Checking':online?'Online':'Offline'}</Tag></div>
       <div className="status-item"><span className="status-bullet bullet-pink"/><div><strong>URL analysis</strong><small>Offline rules · locally trained model optional</small></div><Tag kind="pink">{online===false?'API offline':'Implemented'}</Tag></div>
       <div className="status-item"><span className="status-bullet bullet-violet"/><div><strong>Local ML model</strong><small>{mlReady?'Offline classifier installed':'Not trained yet; see README'}</small></div><Tag kind={mlReady?'violet':'neutral'}>{mlReady?'Ready':'Pending'}</Tag></div>
       <button className="btn btn-outline btn-full" onClick={refresh}>Refresh API status <Activity size={16}/></button>
     </section></div>
-    <div className="note-band"><ShieldCheck size={23}/><div><strong>Privacy starts with accurate claims.</strong><span>Encryption runs on your local Flask backend. URL inspection and local ML never visit the destination; optional Gemini explanations require configuration and explicit consent.</span></div></div>
+    <div className="note-band"><ShieldCheck size={23}/><div><strong>Privacy starts with accurate claims.</strong><span>Messages and passwords are sent to the Flask backend for encryption or decryption. The public website uses a hosted Render backend. URL inspection and ML do not contact the destination website; Gemini explanations are optional and require consent.</span></div></div>
   </>;
 }
 
@@ -189,7 +189,7 @@ function EncryptPage({ addActivity, onMoveToScan }: { addActivity:(action:string
     catch {setFeedback({type:'error',message:'Clipboard access was denied. Use the QR PNG download instead.'});}
   }
   return <><PageTitle eyebrow="ENCRYPTION WORKSPACE" title="Encrypt your data" desc="Protect a short message with a password and generate an encrypted QR code using your original cryptographic engine."/>
-    <div className="workspace-grid"><section className="panel form-panel"><div className="panel-heading"><span className="panel-icon icon-blue"><LockKeyhole size={21}/></span><div><h2>Message encryption</h2><p>Plaintext and password go only to the local Flask process.</p></div></div>
+    <div className="workspace-grid"><section className="panel form-panel"><div className="panel-heading"><span className="panel-icon icon-blue"><LockKeyhole size={21}/></span><div><h2>Message encryption</h2><p>Your message and password are sent to the Flask backend for encryption. On the public website, the backend runs on Render.</p></div></div>
       <form onSubmit={handleSubmit}>
         <label className="field-label" htmlFor="message">Message <span className="optional">Text only · 400 UTF-8 bytes maximum</span></label>
         <textarea id="message" className="field-input message-input" value={message} onChange={e=>setMessage(e.target.value)} placeholder="Write your private message here..." spellCheck={false}/>
@@ -237,7 +237,7 @@ function ScanPage({ initialPayload, addActivity, onAnalyzeUrl }: {initialPayload
   async function startCamera() {
     setMode('camera');setFeedback(null);
     try {
-      if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera API unavailable. Use localhost and allow camera access.');
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera unavailable. Use HTTPS or localhost and allow camera access.');
       stopCamera();
       const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
       streamRef.current=stream;
@@ -246,7 +246,7 @@ function ScanPage({ initialPayload, addActivity, onAnalyzeUrl }: {initialPayload
     } catch(err) {stopCamera();setFeedback({type:'error',message:err instanceof Error?err.message:'Camera unavailable.'});}
   }
   async function scanImage(blob:Blob) {
-    setScanning(true);setResult('');setPayload('');setFeedback({type:'info',message:'Scanning image on your local server…'});
+    setScanning(true);setResult('');setPayload('');setFeedback({type:'info',message:'Uploading image to the Flask backend for scanning…'});
     try {
       const form = new FormData();form.append('image',blob,'qr-image.png');
       const data=await jsonRequest<{payload:string}>('/api/scan',{method:'POST',body:form});
@@ -290,7 +290,7 @@ function ScanPage({ initialPayload, addActivity, onAnalyzeUrl }: {initialPayload
         <button className="btn btn-primary btn-full" disabled={!file||scanning} onClick={handleUpload}><ScanLine size={18}/>{scanning?'Scanning…':'Scan selected image'}</button></>
         :<><div className="camera-box"><video ref={videoRef} playsInline muted autoPlay aria-label="Live camera preview"/><span>Camera preview</span></div>
         <div className="camera-actions"><button className="btn btn-outline" onClick={startCamera}><Camera size={17}/> Start camera</button><button className="btn btn-primary" onClick={captureFrame} disabled={!streamRef.current||scanning}><ScanLine size={17}/> Capture & scan</button><button className="btn btn-muted" onClick={()=>{stopCamera();setFeedback({type:'info',message:'Camera stopped.'});}}>Stop</button></div></>}
-      <div className="small-note"><Info size={17}/> Only PNG/JPEG files are accepted. Images are processed on your local Flask backend.</div>
+      <div className="small-note"><Info size={17}/> Only PNG/JPEG files are accepted. QR images are uploaded to the Flask backend for scanning.</div>
     </section>
     <section className="panel decrypt-panel"><div className="panel-heading"><span className="panel-icon icon-blue"><KeyRound size={21}/></span><div><h2>Decrypt QR data</h2><p>Requires a QSE1 payload and the correct password.</p></div></div>
       <form onSubmit={handleDecrypt}><label className="field-label" htmlFor="payload">Encrypted QR payload <span className="optional">Pasted or extracted</span></label>
@@ -325,8 +325,8 @@ function AnalysisPage({ initialUrl, addActivity, geminiReady, mlReady }: {
     e.preventDefault();setChecking(true);setResult(null);setExplanation('');setConsent(false);setMlResult(null);setFeedback(null);
     try {
       const data=await postJson<URLResult>('/api/analyze',{url:url.trim()});
-      setResult(data);addActivity('URL structure inspected','Offline checks completed · URL not recorded','pink');
-      setFeedback({type:'info',message:'Inspected locally. No request was sent to the destination website.'});
+      setResult(data);addActivity('URL structure inspected','Structural checks completed · no URL stored in tab history','pink');
+      setFeedback({type:'info',message:'Inspected by the Flask backend. No request was sent to the destination website.'});
     } catch(err) {setFeedback({type:'error',message:err instanceof Error?err.message:'Unable to inspect the URL.'});}
     finally {setChecking(false);}
   }
@@ -336,7 +336,7 @@ function AnalysisPage({ initialUrl, addActivity, geminiReady, mlReady }: {
     try {
       const data=await postJson<MLResult>('/api/ml/predict',{url:url.trim()});
       setMlResult(data);
-      addActivity('Local ML pattern checked','Trained model inference · URL not recorded','violet');
+      addActivity('Local ML pattern checked','Server-side model inference · no URL stored in tab history','violet');
     } catch(err) {setFeedback({type:'error',message:err instanceof Error?err.message:'Local ML unavailable.'});}
     finally {setMlWorking(false);}
   }
@@ -352,20 +352,20 @@ function AnalysisPage({ initialUrl, addActivity, geminiReady, mlReady }: {
   }
   const statusLabel=result?.caution==='extra-caution'?'EXTRA CAUTION':result?.caution==='review'?'REVIEW ADVISED':'NO OBVIOUS FLAGS';
   return <>
-    <PageTitle eyebrow="THREAT INTELLIGENCE / LOCAL FIRST" title="Inspect the link. Not the risk." desc="Inspect offline URL rules and optionally run a locally trained ML classifier. Neither proves a link is safe."/>
-    <div className="intelligence-intro"><div><span className="command-label"><span/> URL INTELLIGENCE LAB</span><h2>The safest click is the one you question first.</h2><p>Paste a suspicious QR link below. The local inspector checks its structure without contacting the website, following redirects, or downloading anything.</p><div className="intelligence-chips"><span><Radar size={14}/> No destination visits</span><span><Fingerprint size={14}/> No URL history</span><span><ShieldCheck size={14}/> No invented accuracy</span></div></div><div className="intelligence-visual" aria-hidden="true"><div className="radar-outer"><div className="radar-inner"><Radar size={66} strokeWidth={1.15}/></div></div><span className="radar-caption">INSPECT / DON'T VISIT</span></div></div>
+    <PageTitle eyebrow="THREAT INTELLIGENCE / LOCAL FIRST" title="Inspect the link. Not the risk." desc="Inspect URL-only rules and optionally run a trained classifier on the Flask backend. Neither proves a link is safe."/>
+    <div className="intelligence-intro"><div><span className="command-label"><span/> URL INTELLIGENCE LAB</span><h2>The safest click is the one you question first.</h2><p>Paste a suspicious QR link below. The Flask backend checks its structure without contacting the destination, following redirects, or downloading anything.</p><div className="intelligence-chips"><span><Radar size={14}/> No destination visits</span><span><Fingerprint size={14}/> No URL in tab history</span><span><ShieldCheck size={14}/> No invented accuracy</span></div></div><div className="intelligence-visual" aria-hidden="true"><div className="radar-outer"><div className="radar-inner"><Radar size={66} strokeWidth={1.15}/></div></div><span className="radar-caption">INSPECT / DON'T VISIT</span></div></div>
     <div className="analysis-grid"><section className="panel analysis-entry"><div className="panel-heading"><span className="panel-icon icon-blue"><Radar size={21}/></span><div><h2>Inspect a URL</h2><p>Enter one complete HTTPS or HTTP address.</p></div></div>
       <form onSubmit={inspect}><label className="field-label" htmlFor="inspection-url">URL to inspect</label><div className="url-input-wrap"><input id="inspection-url" className="field-input" type="text" inputMode="url" spellCheck={false} autoComplete="off" value={url} maxLength={2048} onChange={e=>changeUrl(e.target.value)} placeholder="https://example.org/page"/><Radar size={19}/></div>
       <p className="field-hint"><Info size={15}/> This tool does not visit the URL or verify its owner. Results are structural indicators, not a security verdict.</p>
-      <FeedbackLine feedback={feedback}/><button className="btn btn-primary btn-full action-submit" type="submit" disabled={!url.trim()||checking}><Radar size={18}/>{checking?'Inspecting locally…':'Inspect URL locally'}<ArrowRight size={17}/></button></form>
+      <FeedbackLine feedback={feedback}/><button className="btn btn-primary btn-full action-submit" type="submit" disabled={!url.trim()||checking}><Radar size={18}/>{checking?'Inspecting URL…':'Inspect URL structure'}<ArrowRight size={17}/></button></form>
       <div className="analysis-examples"><span>Try examples</span><button type="button" onClick={()=>changeUrl('https://example.org/docs')}>Regular HTTPS</button><button type="button" onClick={()=>changeUrl('http://account.example.org@192.0.2.10/login')}>Disguised host</button></div>
     </section>
     <aside className="panel analysis-method"><span className="method-no">01—03 / METHODOLOGY</span><h2>Evidence, not illusion.</h2><div className="method-step"><span>01</span><div><strong>Parse</strong><p>Validate the scheme, hostname and URL syntax.</p></div></div><div className="method-step"><span>02</span><div><strong>Inspect</strong><p>Apply explainable structural rules; optionally run a trained URL-only model.</p></div></div><div className="method-step"><span>03</span><div><strong>Interpret</strong><p>Review indicators. Opt in to AI explanation if configured.</p></div></div><div className="method-footer"><ShieldAlert size={20}/><p>No live blacklist or certificate validation. The classifier only runs after dataset training and is not a safety guarantee.</p></div></aside></div>
     {result&&<section className="panel findings-panel" aria-live="polite"><div className="findings-top"><div><span className="section-kicker"><span/> STRUCTURE INSPECTION COMPLETE</span><h2>{result.headline}</h2><p>Inspected hostname: <strong>{result.hostname}</strong> · Scheme: {result.scheme.toUpperCase()}</p></div><span className={`risk-label risk-${result.caution}`}><ShieldAlert size={16}/>{statusLabel}</span></div>
       <div className="findings-list">{result.indicators.length?result.indicators.map((f,i)=><div className="finding-item" key={`${f.title}-${i}`}><span className={`finding-symbol severity-${f.severity}`}><CircleAlert size={19}/></span><div><strong>{f.title}</strong><p>{f.detail}</p></div><Tag kind={f.severity==='elevated'?'pink':'violet'}>{f.severity==='elevated'?'Extra caution':'Review'}</Tag></div>):<div className="finding-empty"><Info size={24}/><div><strong>No listed indicators matched.</strong><p>A malicious link can still appear entirely ordinary. Confirm the sender and destination independently.</p></div></div>}</div>
       <div className="finding-notice"><ShieldAlert size={21}/><div><strong>Not a verdict.</strong><p>{result.disclaimer} {result.guidance}</p></div></div>
-      <div className="ml-zone"><div className="gemini-heading"><span className="ai-orb"><BrainCircuit size={20}/></span><div><h3>Local machine-learning check</h3><p>Train a URL-only phishing-pattern classifier on the UCI dataset. Inference runs inside your Flask process, without visiting the link or sending it to an AI provider.</p></div><Tag kind={mlReady?'violet':'neutral'}>{mlReady?'Model installed':'Training required'}</Tag></div>
-        {mlReady?<button type="button" className="btn btn-primary" disabled={mlWorking} onClick={runLocalMl}><BrainCircuit size={17}/>{mlWorking?'Running local model…':'Analyze with local ML'}<ArrowRight size={16}/></button>:<p className="setup-hint">No trained model is included. Follow the README to download the real UCI dataset, run training, evaluate held-out results and restart Flask. No predictions are fabricated.</p>}
+      <div className="ml-zone"><div className="gemini-heading"><span className="ai-orb"><BrainCircuit size={20}/></span><div><h3>Server-side machine-learning check</h3><p>Train a URL-only phishing-pattern classifier on the UCI dataset. Inference runs on the Flask backend (hosted on Render for the public website), without visiting the destination or sending the URL to an AI provider.</p></div><Tag kind={mlReady?'violet':'neutral'}>{mlReady?'Model installed':'Training required'}</Tag></div>
+        {mlReady?<button type="button" className="btn btn-primary" disabled={mlWorking} onClick={runLocalMl}><BrainCircuit size={17}/>{mlWorking?'Running ML model…':'Analyze with ML'}<ArrowRight size={16}/></button>:<p className="setup-hint">The model is not available to this backend. Check the model artifact and API health endpoint. No predictions are fabricated.</p>}
         {mlResult&&<div className="ml-result" role="status"><div className="ml-result-label"><BrainCircuit size={20}/><strong>Model signal: {mlResult.signal==='review-required'?'Manual review required — borderline model signal':mlResult.signal==='phishing-like'?'Phishing-like URL pattern':'Benign-like URL pattern'}</strong></div><p>{mlResult.disclaimer}</p>{mlResult.review_policy&&<p>{mlResult.review_policy}</p>}<small>{mlResult.method} Dataset: {mlResult.dataset}. No probability displayed.</small></div>}
       </div>
       <div className="gemini-zone"><div className="gemini-heading"><span className="ai-orb"><Sparkles size={20}/></span><div><h3>Ask Gemini to explain the findings</h3><p>Optional. Gemini can explain these rules, but cannot prove whether a link is safe.</p></div><Tag kind={geminiReady?'violet':'neutral'}>{geminiReady?'Key present · access unverified':'Setup required'}</Tag></div>
@@ -379,7 +379,7 @@ function AnalysisPage({ initialUrl, addActivity, geminiReady, mlReady }: {
 }
 
 function HistoryPage({ activity, clear }: {activity:ActivityRecord[];clear:()=>void}) {
-  return <><PageTitle eyebrow="IN-MEMORY EVENTS" title="Session activity" desc="Non-sensitive event labels from this browser tab only. Nothing is saved to disk or a database."/>
+  return <><PageTitle eyebrow="IN-MEMORY EVENTS" title="Session activity" desc="Activity labels are kept in memory in this browser tab. Hosting and backend logs are separate."/>
     <section className="panel history-panel"><div className="panel-head"><div><h2>Activity in this tab</h2><p>Refresh or close the tab to clear all entries automatically.</p></div><button className="btn btn-outline" disabled={!activity.length} onClick={clear}><Trash2 size={17}/> Clear events</button></div>
       {activity.length?activity.map(a=><div className="history-entry" key={a.id}><span className={`activity-icon icon-${a.kind}`}><History size={19}/></span><div><strong>{a.action}</strong><small>{a.detail}</small></div><time>{a.time.toLocaleTimeString()}</time></div>)
         :<div className="empty-state big-empty"><History size={37}/><strong>Nothing to display yet</strong><p>Encrypt or scan a QR code to add an event. We never store your password or message in this history.</p></div>}
@@ -389,12 +389,12 @@ function HistoryPage({ activity, clear }: {activity:ActivityRecord[];clear:()=>v
 function AboutPage({ navigate }: {navigate:(p:Page)=>void}) {
   return <><PageTitle eyebrow="ABOUT THE PROJECT" title="Designed for useful security" desc="A transparent, educational QR encryption demo rebuilt with a professional interface."/>
     <div className="about-grid"><section className="panel about-main"><h2>How QRShield works</h2>
-      <div className="step"><span>01</span><div><h3>Encrypt your message</h3><p>Your browser sends the password and short message to your locally running Flask backend. A random salt and nonce are generated, a key is derived with scrypt, and AES-256-GCM authenticates and encrypts the data.</p></div></div>
+      <div className="step"><span>01</span><div><h3>Encrypt your message</h3><p>Your browser sends the password and short message to the Flask backend (hosted on Render when using the public website). A random salt and nonce are generated, a key is derived with scrypt, and AES-256-GCM authenticates and encrypts the data.</p></div></div>
       <div className="step"><span>02</span><div><h3>Create a QR image</h3><p>A versioned QSE1 payload stores the salt, nonce, and ciphertext with authentication tag. The password and message are not serialized in the QR code.</p></div></div>
       <div className="step"><span>03</span><div><h3>Scan and decrypt</h3><p>Upload a PNG/JPEG, capture a webcam image, or paste the payload; then enter the password. Wrong passwords or modified ciphertext fail authenticated decryption.</p></div></div>
       <button className="btn btn-primary" onClick={()=>navigate('encrypt')}>Try the encryption flow <ArrowRight size={17}/></button>
     </section><aside className="panel about-side"><ShieldCheck size={35}/><h2>Important limitations</h2><ul>
-      <li>Local educational prototype, not an audited service.</li><li>Passwords can be attacked offline; choose a strong one.</li><li>No built-in safe password sharing or sender identity verification.</li><li>Neither QR scanning nor AES-GCM detects phishing.</li><li>URL rules are heuristics; the separate offline model requires local training and evaluation on the UCI dataset. Neither is a reputation service or safety verdict.</li><li>Gemini explanation is optional and requires configuration and explicit consent.</li><li>No public hosting, login, persistent history or production security controls in this version.</li>
+      <li>Educational prototype with public hosting; not independently security-audited.</li><li>Passwords can be attacked offline; choose a strong one.</li><li>No built-in safe password sharing or sender identity verification.</li><li>Neither QR scanning nor AES-GCM detects phishing.</li><li>URL rules are heuristics; the separate model was trained and evaluated on the UCI dataset. Neither is a reputation service or safety verdict.</li><li>Gemini explanation is optional and requires configuration and explicit consent.</li><li>Public hosting is provided for demonstration; there are no user accounts, guaranteed persistent history, or independently audited production security controls.</li>
     </ul><div className="about-author"><strong>Built by Sabahudin Shinwari</strong><span>Computer Science (Data Science), Albukhary International University</span><a href="https://github.com/SabahudinShinwari" target="_blank" rel="noreferrer"><Github size={17}/> GitHub profile</a></div></aside></div></>;
 }
 
@@ -427,11 +427,11 @@ function App() {
       <aside className={`sidebar ${menuOpen?'sidebar-open':''}`}><div className="sidebar-top"><button onClick={()=>navigate('home')} className="brand-button"><Mark small/></button><button className="mobile-only icon-button" onClick={()=>setMenuOpen(false)} aria-label="Close menu"><X size={23}/></button></div>
         <div className="sidebar-label">WORKSPACE</div><nav aria-label="Workspace navigation" className="sidebar-nav">{navigation.map(n=><button key={n.id} aria-current={page===n.id?'page':undefined} className={page===n.id?'active':''} onClick={()=>navigate(n.id)}><n.icon size={19}/><span>{n.label}</span>{page===n.id&&<span className="nav-line"/>}</button>)}</nav>
         <div className="sidebar-bottom"><div className="sidebar-help"><ShieldCheck size={28}/><strong>Security first</strong><p>Encryption you can inspect. AI claims you can verify.</p><button onClick={()=>navigate('about')}>Read more <ArrowRight size={14}/></button></div>
-          <div className="sidebar-credit">QRShield AI <span>v3.0 · Local prototype</span></div></div>
+          <div className="sidebar-credit">QRShield AI <span>v3.0 · Educational prototype</span></div></div>
       </aside>
       {menuOpen&&<button className="mobile-overlay" aria-label="Close navigation" onClick={()=>setMenuOpen(false)}/>}
       <div className="main-column"><header className="workspace-header"><div className="breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={()=>setMenuOpen(true)}><Menu size={22}/></button><span className="breadcrumb-icon">{current&&<current.icon size={18}/>}</span><span>{current?.label??'Workspace'}</span></div>
-        <div className="workspace-head-right"><div className="connection" title={online===null?'Checking backend':online?'Flask API available':'Flask API unavailable'}><span className={`connection-dot ${online?'connected':''}`}/>{online?'Local API online':online===null?'Connecting…':'API offline'}</div>
+        <div className="workspace-head-right"><div className="connection" title={online===null?'Checking backend':online?'Flask API available':'Flask API unavailable'}><span className={`connection-dot ${online?'connected':''}`}/>{online?'API online':online===null?'Connecting…':'API offline'}</div>
           <button className="icon-button theme-button" onClick={toggleTheme} aria-label="Toggle workspace theme">{theme==='light'?<Moon size={18}/>:<Sun size={18}/>}</button>
           <div className="profile-chip"><div>S</div><span>Sabahudin <small>Developer</small></span></div></div>
       </header><main className="workspace-content">
@@ -441,7 +441,7 @@ function App() {
         {page==='analysis'&&<AnalysisPage key={analysisKey} initialUrl={incomingUrl} addActivity={addActivity} geminiReady={geminiReady} mlReady={mlReady}/>}
         {page==='history'&&<HistoryPage activity={activity} clear={()=>setActivity([])}/>}
         {page==='about'&&<AboutPage navigate={navigate}/>}
-      </main><footer className="workspace-footer"><span><ShieldCheck size={17}/> QRShield AI · Educational local prototype</span><span>Made by Sabahudin Shinwari</span></footer></div></div>}
+      </main><footer className="workspace-footer"><span><ShieldCheck size={17}/> QRShield AI · Educational hosted prototype</span><span>Made by Sabahudin Shinwari</span></footer></div></div>}
   </div>;
 }
 
